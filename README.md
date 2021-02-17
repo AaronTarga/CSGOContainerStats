@@ -1,7 +1,35 @@
 # CSGOContainerStats
 
-This Python script parses the steam inventory history for unboxed containers.
+This Python script parses the steam inventory history for unboxed csgo items from containers like cases, souvenir, packages,sticker capsules and so on.
+If the script doesn't crash or get's stopped, it writes all unboxed items grouped by container where they got unboxed from into a file called stats.txt.
 
+## Requirements
+
+- A steam account with inventory history of csgo items  
+- At least Python version 3.6 installed. The newest Python version at the official Python's [site](https://www.python.org/downloads/).
+- Python needs to have pip module installed, see [website](https://pip.pypa.io/en/stable/installing/) of pip module for installation.
+
+After you have Python and pip installed you can install all needed dependencies with this command:
+```
+pip install -r requirements.txt
+```
+
+## Usage
+
+1. Check that all requirements are fulfilled
+2. Retrieve steam cookies
+3. Enter cookies in profile.yaml file(see Example Config)
+4. Execute python script and wait for it to finish 
+5. Stats are now written in stats.txt file from the directory where you executed the script
+
+## Example Config
+Here is an example for the profile.yaml needed:
+```
+sessionid: "retrieved-sessionid"
+steamLoginSecure: "retrieved-loggin-secure"
+```
+
+## Example Result
 Here is an example for an output file of the script:
 ```
 Autograph Capsule | Fnatic | Cologne 2015:
@@ -53,3 +81,24 @@ Final Summary:
    Restricted: 1/14(7.142857142857142%)
    Classified: 1/14(7.142857142857142%)
 ```
+
+## FAQ
+
+How to retrieve Cookies?
+
+Using extension(easy):
+
+1. Download [Cookie Editor]((https://addons.mozilla.org/en-US/firefox/addon/cookie-editor/)) for Firefox or [Cookie Editor](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=de) for Chrome
+2. Go to steam site and log in
+3. Click on cookie editor extension icon or press F12 and click on EditThisCookie/Cookie Editor Tab
+4. Copy needed cookie values
+
+Using browser:
+
+1. Go to steam site and log in
+2. Press F12
+3. Go to Network Tab
+4. Press F5 to refresh site
+5. Select the top entry at the network tab
+6. Scroll down on the right side till you see Cookie
+7. Copy needed values
