@@ -18,16 +18,10 @@ pip install -r requirements.txt
 
 1. Check that all requirements are fulfilled
 2. Retrieve steam cookies
-3. Enter cookies in profile.yaml file(see Example Config)
+3. Enter cookies and profile url in example_profile.yaml file(see Example Config)
+4. Rename example_profile.yaml to profile.yaml
 4. Execute python script and wait for it to finish 
 5. Stats are now written in stats.txt file from the directory where you executed the script
-
-## Example Config
-Here is an example for the profile.yaml needed:
-```
-sessionid: "retrieved-sessionid"
-steamLoginSecure: "retrieved-loggin-secure"
-```
 
 ## Example Result
 Here is an example for an output file of the script:
@@ -102,3 +96,9 @@ Using browser:
 5. Select the top entry at the network tab
 6. Scroll down on the right side till you see Cookie
 7. Copy needed values
+
+What is my profile url?
+
+It can be found when you go to your profile.
+The url on your profile looks the following: https://steamcommunity.com/id/{profile_url}
+You need the value after the id for this script to work.

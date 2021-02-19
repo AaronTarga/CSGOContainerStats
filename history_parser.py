@@ -88,6 +88,7 @@ with open(f"{os.path.dirname(os.path.realpath(__file__))}/profile.yaml", "r") as
 
 sessionid = config['sessionid']
 steamLoginSecure = config['steamLoginSecure']
+profile_url = config['url']
 
 _time = 99999999999
 appid="730"
@@ -102,7 +103,7 @@ cookies = {"sessionId": sessionid,
 
 while count == 50:
     url = URL_INVENTORY.format(
-        profile_url = "ATF15",
+        profile_url = profile_url,
         time = _time,
         appid = appid,
         frac = frac,
