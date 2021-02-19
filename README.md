@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 1. Check that all requirements are fulfilled
 2. Retrieve steam cookies
-3. Enter cookies and profile url in example_profile.yaml file(see Example Config)
+3. Enter cookies in example_profile.yaml file(see [example file](example_profile.yaml))
 4. Rename example_profile.yaml to profile.yaml
 4. Execute python script and wait for it to finish 
 5. Stats are now written in stats.txt file from the directory where you executed the script
@@ -97,8 +97,7 @@ Using browser:
 6. Scroll down on the right side till you see Cookie
 7. Copy needed values
 
-What is my profile url?
+The script gives JSONDecodeError:
 
-It can be found when you go to your profile.
-The url on your profile looks the following: https://steamcommunity.com/id/{profile_url}
-You need the value after the id for this script to work.
+This happens when the cookies are expired.
+You have to get new cookies and exchange the old cookie values with them in profile.yaml.

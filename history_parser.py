@@ -80,7 +80,8 @@ def translate_ids(html_ids,descriptions,containers_results):
 
     return containers_results
 
-URL_INVENTORY = "https://steamcommunity.com/id/{profile_url}/inventoryhistory/?ajax=1&cursor%5Btime%5D={time}&cursor%5Btime_frac%5D={frac}&cursor%5Bs%5D={s}&app%5B%5D={appid}"
+URL_INVENTORY = "{profile_url}/inventoryhistory/?ajax=1&cursor%5Btime%5D={time}&cursor%5Btime_frac%5D={frac}&cursor%5Bs%5D={s}&app%5B%5D={appid}"
+PROFILE_URL = "https://steamcommunity.com/my"
 
 #reading config
 with open(f"{os.path.dirname(os.path.realpath(__file__))}/profile.yaml", "r") as f:
@@ -88,7 +89,6 @@ with open(f"{os.path.dirname(os.path.realpath(__file__))}/profile.yaml", "r") as
 
 sessionid = config['sessionid']
 steamLoginSecure = config['steamLoginSecure']
-profile_url = config['url']
 
 _time = 99999999999
 appid="730"
@@ -100,6 +100,10 @@ last_update = ""
 
 cookies = {"sessionId": sessionid,
             "steamLoginSecure": steamLoginSecure }
+
+#getting profile url for inventory history
+profile_resp = requests.get(PROFILE_URL,cookies=cookies)
+profile_url = profile_resp.url
 
 while count == 50:
     url = URL_INVENTORY.format(
