@@ -5,6 +5,7 @@ import time
 import io
 import yaml
 import os
+import sys
 
 class Item:
     def __init__(self, _name, _type, _rarity, _stat_track):
@@ -87,7 +88,6 @@ PROFILE_URL = "https://steamcommunity.com/my"
 with open(f"{os.path.dirname(os.path.realpath(__file__))}/profile.yaml", "r") as f:
     config = yaml.load(f,Loader=yaml.FullLoader)
 
-sessionid = config['sessionid']
 steamLoginSecure = config['steamLoginSecure']
 
 _time = 99999999999
@@ -98,12 +98,14 @@ count = 50
 containers_results = {}
 last_update = ""
 
-cookies = {"sessionId": sessionid,
-            "steamLoginSecure": steamLoginSecure }
+cookies = { "steamLoginSecure": steamLoginSecure }
 
 #getting profile url for inventory history
 profile_resp = requests.get(PROFILE_URL,cookies=cookies)
 profile_url = profile_resp.url
+
+if "https://steamcommunity.com/login" in profile_url:
+    sys.exit("Cookie in profile.yaml has expired or is invalid! Try getting new cookie values")
 
 while count == 50:
     url = URL_INVENTORY.format(
@@ -168,6 +170,9 @@ for container,items in containers_results.items():
     total_count += len(items)
 
 #writing overall summary of rarities
-statfile.write(f"Final Summary:\n")
-for rarity,count in total_rarity_dict.items():
-    statfile.write(f"   {rarity}: {count}/{total_count}({count/total_count*100}%)\n")
+if len(total_rarity_dict) > 0:
+    statfile.write(f"Final Summary:\n")
+    for rarity,count in total_rarity_dict.items():
+        statfile.write(f"   {rarity}: {count}/{total_count}({count/total_count*100}%)\n")
+else:
+    print("No opened containers found :(")

@@ -17,8 +17,8 @@ pip install -r requirements.txt
 ## Usage
 
 1. Check that all requirements are fulfilled
-2. Retrieve steam cookies
-3. Enter cookies in example_profile.yaml file(see [example file](example_profile.yaml))
+2. Retrieve steam cookie
+3. Enter cookie in example_profile.yaml file(see [example file](example_profile.yaml))
 4. Rename example_profile.yaml to profile.yaml
 4. Execute python script and wait for it to finish 
 5. Stats are now written in stats.txt file from the directory where you executed the script
@@ -85,7 +85,7 @@ Using extension(easy):
 1. Download [Cookie Editor]((https://addons.mozilla.org/en-US/firefox/addon/cookie-editor/)) for Firefox or [Cookie Editor](https://chrome.google.com/webstore/detail/editthiscookie/fngmhnnpilhplaeedifhccceomclgfbg?hl=de) for Chrome
 2. Go to steam site and log in
 3. Click on cookie editor extension icon or press F12 and click on EditThisCookie/Cookie Editor Tab
-4. Copy needed cookie values
+4. Copy needed cookie value
 
 Using browser:
 
@@ -95,9 +95,4 @@ Using browser:
 4. Press F5 to refresh site
 5. Select the top entry at the network tab
 6. Scroll down on the right side till you see Cookie
-7. Copy needed values
-
-The script gives JSONDecodeError:
-
-This happens when the cookies are expired.
-You have to get new cookies and exchange the old cookie values with them in profile.yaml.
+7. Copy needed cookie value
