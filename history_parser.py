@@ -6,16 +6,19 @@ import io
 import yaml
 import os
 import sys
+from enum import Enum
 
 class Item:
-    def __init__(self, _name, _type, _rarity, _stat_track):
+    def __init__(self, _name, _date, _type, _rarity, _stat_track):
         self._name = _name
         self._type = _type
         self._rarity = _rarity
         self._stat_track = _stat_track
+        self._date = _date
+
 
     def __str__(self):
-        return f"   {self._name} - {self._rarity}"
+        return f"{self._date}   {self._name} - {self._rarity}"
 
 def parse_html(html):
     #regex patterns
@@ -38,14 +41,14 @@ def parse_html(html):
                 #adding item_ids to dict entry of container id
                 if len(found_items) == 2: #capsules or souvenirs
                     if found_items[0] in opened_container:
-                        opened_container[found_items[0]].append(found_items[1])
+                        opened_container[found_items[0]].append((date_found[0][0],) + found_items[1])
                     else:
-                        opened_container[found_items[0]] = [found_items[1]]
+                        opened_container[found_items[0]] = [(date_found[0][0],) + found_items[1]]
                 elif len(found_items) == 3: #cases
                     if found_items[0] in opened_container:
-                        opened_container[found_items[0]].append(found_items[2])
+                        opened_container[found_items[0]].append((date_found[0][0],) + found_items[2])
                     else:
-                        opened_container[found_items[0]] = [found_items[2]]
+                        opened_container[found_items[0]] = [(date_found[0][0],) + found_items[2]]
 
     return (opened_container,last_update)
         
@@ -63,7 +66,8 @@ def translate_ids(html_ids,descriptions,containers_results):
 
         #adding all unboxed items to dict entry of container    
         for item in items:
-            item_id = f"{item[0]}_{item[1]}"
+            date = item[0]
+            item_id = f"{item[1]}_{item[2]}"
             item_info = descriptions["730"][item_id]
             item_name = item_info["market_hash_name"]
             item_rarity = ""
@@ -77,7 +81,7 @@ def translate_ids(html_ids,descriptions,containers_results):
                 if tag['category'] == "Rarity":
                     item_rarity = tag['name']
                 
-            containers_results[container_name].append(Item(item_name,item_type,item_rarity,item_stat_track))
+            containers_results[container_name].append(Item(item_name,date,item_type,item_rarity,item_stat_track))
 
     return containers_results
 
@@ -173,7 +177,7 @@ for container,items in containers_results.items():
             container_rarity_dict[item._rarity] += 1
         else:
             container_rarity_dict[item._rarity] = 1
-        statfile.write(f"{item}\n")
+        statfile.write(f"{str(item)}\n")
 
     statfile.write(f"\n   Summary:\n")
 
@@ -190,8 +194,25 @@ for container,items in containers_results.items():
 
 #writing overall summary of rarities
 if len(total_rarity_dict) > 0:
-    statfile.write(f"Final Summary:\n")
+    statfile.write(f"Final Summary:\n\n")
+
+    #calculating rarities for cases
+    case_rarities = ["Mil-Spec Grade","Classified","Covert","Restricted"]
+    case_count = 0
+    for rarity in case_rarities:
+        if rarity in total_rarity_dict:
+            case_count += total_rarity_dict[rarity]
+
+    #printing case rarity summary
+    statfile.write(f"Case Summary:\n")
     for rarity,count in total_rarity_dict.items():
-        statfile.write(f"   {rarity}: {count}/{total_count}({count/total_count*100}%)\n")
+        if rarity in case_rarities:
+            statfile.write(f"   {rarity}: {count}/{case_count}({count/case_count*100}%)\n")
+
+    statfile.write(f"\nSticker+Souvenir Summary:\n")
+    other_count = total_count - case_count
+    for rarity,count in total_rarity_dict.items():
+        if rarity not in case_rarities:
+            statfile.write(f"   {rarity}: {count}/{other_count}({count/other_count*100}%)\n")
 else:
     print("No opened containers found :(")
