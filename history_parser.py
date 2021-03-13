@@ -81,6 +81,23 @@ def translate_ids(html_ids,descriptions,containers_results):
 
     return containers_results
 
+def retrieve_page(url,cookies):
+    data = None
+
+    tries = 0
+    while data is None and tries < 10:
+
+        resp = requests.get(url,cookies=cookies)
+
+        try:
+            data = resp.json()
+        except JSONDecodeError:
+            tries += 1
+            print(f"error fetching page retrying {10-tries} more time")
+            sleep(5)
+
+    return data
+
 URL_INVENTORY = "{profile_url}/inventoryhistory/?ajax=1&cursor%5Btime%5D={time}&cursor%5Btime_frac%5D={frac}&cursor%5Bs%5D={s}&app%5B%5D={appid}"
 PROFILE_URL = "https://steamcommunity.com/my"
 
@@ -116,9 +133,11 @@ while count == 50:
         s = s
     )
 
-    resp = requests.get(url,cookies=cookies)
+    data = retrieve_page(url,cookies); 
 
-    data = resp.json()
+    if data is None:
+           sys.exit("Couldn't fetch page possibly to steam network error.")
+
     html = data["html"].replace("\n", "").replace("\r","").replace("\t","")
     count = data["num"]
     if "cursor" in data:

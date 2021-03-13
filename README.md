@@ -96,3 +96,12 @@ Using browser:
 5. Select the top entry at the network tab
 6. Scroll down on the right side till you see Cookie
 7. Copy needed cookie value
+
+Script crashes with following message: "Couldn't fetch pages possibly to steam network error.".
+
+**Tl;dr: Try to start the script again!**
+
+What probably happened:
+- Steam blocked your IP. This is unlikely to happen because the script only sends a few requests each minute.
+- Your Cookie expired. If you restart the script it should detect the expired cookies and display a message that informs you to fetch new cookies.
+- There was some sort of network error like the message says. In this case you should try to start the script again.
