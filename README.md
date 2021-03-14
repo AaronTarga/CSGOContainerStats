@@ -23,57 +23,182 @@ pip install -r requirements.txt
 4. Execute python script and wait for it to finish 
 5. Stats are now written in stats.txt file from the directory where you executed the script
 
+You can add --json or -j to the script to get a json output.
+
 ## Example Result
-Here is an example for an output file of the script:
+Here is an example for an output file of the script for the normal format:
 ```
-Autograph Capsule | Fnatic | Cologne 2015:
-   Sticker | KRIMZ | Cologne 2015 - High Grade
+Case:
+    Danger Zone Case:
+        26 Mar, 2020 - StatTrak™ SG 553 | Danger Close (Field-Tested) - Mil-Spec Grade
+        Summary:
+            Mil-Spec Grade: 1/1(100.00%)
 
-   Summary:
-       High Grade: 1/1(100.0%)
+Case Summary:
+    1/1(100.00%)
 
-Operation Breakout Weapon Case:
-   Negev | Desert-Strike (Field-Tested) - Mil-Spec Grade
-   UMP-45 | Labyrinth (Minimal Wear) - Mil-Spec Grade
-   StatTrak™ SSG 08 | Abyss (Minimal Wear) - Mil-Spec Grade
-   Negev | Desert-Strike (Factory New) - Mil-Spec Grade
+Others:
+    CS20 Sticker Capsule:
+        4 Jun, 2020 - Sticker | Nuke Beast - High Grade
+        4 Jun, 2020 - Sticker | Nuke Beast - High Grade
+        Summary:
+            High Grade: 2/2(100.00%)
 
-   Summary:
-       Mil-Spec Grade: 4/4(100.0%)
+    Berlin 2019 Minor Challengers (Holo/Foil):
+        4 Jun, 2020 - Sticker | Grayhound Gaming (Holo) | Berlin 2019 - Remarkable
+        4 Jun, 2020 - Sticker | CR4ZY (Foil) | Berlin 2019 - Exotic
+        Summary:
+            Remarkable: 1/2(50.00%)
+            Exotic: 1/2(50.00%)
 
-Chroma 2 Case:
-   M4A1-S | Hyper Beast (Well-Worn) - Covert
-   P250 | Valence (Field-Tested) - Mil-Spec Grade
-   AWP | Worm God (Minimal Wear) - Restricted
-   Five-SeveN | Monkey Business (Well-Worn) - Classified
+    Skill Groups Capsule:
+        4 Jun, 2020 - Sticker | Distinguished Master Guardian - High Grade
+        Summary:
+            High Grade: 1/1(100.00%)
 
-   Summary:
-       Covert: 1/4(25.0%)
-       Mil-Spec Grade: 1/4(25.0%)
-       Restricted: 1/4(25.0%)
-       Classified: 1/4(25.0%)
+    Berlin 2019 Legends Autograph Capsule:
+        4 Jun, 2020 - Sticker | Golden | Berlin 2019 - High Grade
+        4 Jun, 2020 - Sticker | rain (Foil) | Berlin 2019 - Remarkable
+        Summary:
+            High Grade: 1/2(50.00%)
+            Remarkable: 1/2(50.00%)
 
-Chroma Case:
-   StatTrak™ M249 | System Lock (Field-Tested) - Mil-Spec Grade
-   Glock-18 | Catacombs (Field-Tested) - Mil-Spec Grade
-   StatTrak™ Glock-18 | Catacombs (Field-Tested) - Mil-Spec Grade
-   M249 | System Lock (Minimal Wear) - Mil-Spec Grade
+    Half-Life: Alyx Sticker Capsule:
+        26 Mar, 2020 - Sticker | Lambda (Holo) - Remarkable
+        26 Mar, 2020 - Sticker | Lambda - High Grade
+        Summary:
+            Remarkable: 1/2(50.00%)
+            High Grade: 1/2(50.00%)
 
-   Summary:
-       Mil-Spec Grade: 4/4(100.0%)
+Others Summary:
+    5/9(55.56%)
+    3/9(33.33%)
+    1/9(11.11%)
+```
 
-Operation Phoenix Weapon Case:
-   MAG-7 | Heaven Guard (Minimal Wear) - Mil-Spec Grade
+Here is an example for an output file of the script for the json format:
 
-   Summary:
-       Mil-Spec Grade: 1/1(100.0%)
-
-Final Summary:
-   High Grade: 1/14(7.142857142857142%)
-   Mil-Spec Grade: 10/14(71.42857142857143%)
-   Covert: 1/14(7.142857142857142%)
-   Restricted: 1/14(7.142857142857142%)
-   Classified: 1/14(7.142857142857142%)
+```
+{
+    "Case": {
+        "items": {
+            "Danger Zone Case": {
+                "items": [
+                    "26 Mar, 2020 - StatTrak\u2122 SG 553 | Danger Close (Field-Tested) - Mil-Spec Grade"
+                ],
+                "summary": {
+                    "Mil-Spec Grade": {
+                        "absolute": 1,
+                        "relative": 100.0
+                    }
+                },
+                "count": 1
+            }
+        },
+        "summary": {
+            "Mil-Spec Grade": {
+                "absolute": 1,
+                "relative": 100.0
+            }
+        },
+        "count": 1
+    },
+    "Others": {
+        "items": {
+            "CS20 Sticker Capsule": {
+                "items": [
+                    "4 Jun, 2020 - Sticker | Nuke Beast - High Grade",
+                    "4 Jun, 2020 - Sticker | Nuke Beast - High Grade"
+                ],
+                "summary": {
+                    "High Grade": {
+                        "absolute": 2,
+                        "relative": 100.0
+                    }
+                },
+                "count": 2
+            },
+            "Berlin 2019 Minor Challengers (Holo/Foil)": {
+                "items": [
+                    "4 Jun, 2020 - Sticker | Grayhound Gaming (Holo) | Berlin 2019 - Remarkable",
+                    "4 Jun, 2020 - Sticker | CR4ZY (Foil) | Berlin 2019 - Exotic"
+                ],
+                "summary": {
+                    "Remarkable": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    },
+                    "Exotic": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    }
+                },
+                "count": 2
+            },
+            "Skill Groups Capsule": {
+                "items": [
+                    "4 Jun, 2020 - Sticker | Distinguished Master Guardian - High Grade"
+                ],
+                "summary": {
+                    "High Grade": {
+                        "absolute": 1,
+                        "relative": 100.0
+                    }
+                },
+                "count": 1
+            },
+            "Berlin 2019 Legends Autograph Capsule": {
+                "items": [
+                    "4 Jun, 2020 - Sticker | Golden | Berlin 2019 - High Grade",
+                    "4 Jun, 2020 - Sticker | rain (Foil) | Berlin 2019 - Remarkable"
+                ],
+                "summary": {
+                    "High Grade": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    },
+                    "Remarkable": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    }
+                },
+                "count": 2
+            },
+            "Half-Life: Alyx Sticker Capsule": {
+                "items": [
+                    "26 Mar, 2020 - Sticker | Lambda (Holo) - Remarkable",
+                    "26 Mar, 2020 - Sticker | Lambda - High Grade"
+                ],
+                "summary": {
+                    "Remarkable": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    },
+                    "High Grade": {
+                        "absolute": 1,
+                        "relative": 50.0
+                    }
+                },
+                "count": 2
+            }
+        },
+        "summary": {
+            "High Grade": {
+                "absolute": 5,
+                "relative": 55.55555555555556
+            },
+            "Remarkable": {
+                "absolute": 3,
+                "relative": 33.33333333333333
+            },
+            "Exotic": {
+                "absolute": 1,
+                "relative": 11.11111111111111
+            }
+        },
+        "count": 9
+    }
+}
 ```
 
 ## FAQ

@@ -6,19 +6,7 @@ import io
 import yaml
 import os
 import sys
-from enum import Enum
-
-class Item:
-    def __init__(self, _name, _date, _type, _rarity, _stat_track):
-        self._name = _name
-        self._type = _type
-        self._rarity = _rarity
-        self._stat_track = _stat_track
-        self._date = _date
-
-
-    def __str__(self):
-        return f"{self._date}   {self._name} - {self._rarity}"
+import argparse
 
 def parse_html(html):
     #regex patterns
@@ -27,7 +15,8 @@ def parse_html(html):
 
     html = html.split("tradehistoryrow")
     last_update = ""
-    opened_container = {}
+    opened_other = {}
+    opened_cases = {}
 
     #parsing all unboxed items from item_history
     for history in html:
@@ -40,17 +29,17 @@ def parse_html(html):
 
                 #adding item_ids to dict entry of container id
                 if len(found_items) == 2: #capsules or souvenirs
-                    if found_items[0] in opened_container:
-                        opened_container[found_items[0]].append((date_found[0][0],) + found_items[1])
+                    if found_items[0] in opened_other:
+                        opened_other[found_items[0]].append((date_found[0][0],) + found_items[1])
                     else:
-                        opened_container[found_items[0]] = [(date_found[0][0],) + found_items[1]]
+                        opened_other[found_items[0]] = [(date_found[0][0],) + found_items[1]]
                 elif len(found_items) == 3: #cases
-                    if found_items[0] in opened_container:
-                        opened_container[found_items[0]].append((date_found[0][0],) + found_items[2])
+                    if found_items[0] in opened_cases:
+                        opened_cases[found_items[0]].append((date_found[0][0],) + found_items[2])
                     else:
-                        opened_container[found_items[0]] = [(date_found[0][0],) + found_items[2]]
+                        opened_cases[found_items[0]] = [(date_found[0][0],) + found_items[2]]
 
-    return (opened_container,last_update)
+    return (opened_cases,opened_other,last_update)
         
 
 def translate_ids(html_ids,descriptions,containers_results):
@@ -72,7 +61,6 @@ def translate_ids(html_ids,descriptions,containers_results):
             item_name = item_info["market_hash_name"]
             item_rarity = ""
             item_type = ""
-            item_stat_track = "StatTrak" in item_name
 
             #parsing tags for item_type and rarity
             for tag in item_info["tags"]:
@@ -81,7 +69,7 @@ def translate_ids(html_ids,descriptions,containers_results):
                 if tag['category'] == "Rarity":
                     item_rarity = tag['name']
                 
-            containers_results[container_name].append(Item(item_name,date,item_type,item_rarity,item_stat_track))
+            containers_results[container_name].append((date,item_name,item_rarity))
 
     return containers_results
 
@@ -95,12 +83,50 @@ def retrieve_page(url,cookies):
 
         try:
             data = resp.json()
-        except JSONDecodeError:
+        except:
             tries += 1
             print(f"error fetching page retrying {10-tries} more time")
-            sleep(5)
+            time.sleep(5)
 
     return data
+
+#goes through the dict of the unboxed items, calculates the absoulte and relative occurences and puts them in hierarchary structured dict
+def calculate_opening_stats(statfile,container_results):
+    total_count = 0
+    total_rarity_dict = {}
+    container_json = {}
+    for container_name,items in container_results.items():
+        #writing pulled items from current container into file
+        formatted_items = []
+        container_rarity_dict = {}
+        for item in items:
+            date = item[0]
+            name = item[1]
+            rarity = item[2]
+            formatted_items.append(f"{date} - {name} - {rarity}")
+            if rarity in container_rarity_dict:
+                container_rarity_dict[rarity] += 1
+            else:
+                container_rarity_dict[rarity] = 1
+
+        summary = {}
+        #writing summary of opened items regarding rarities for current container into file
+        for rarity,count in container_rarity_dict.items():
+            if rarity in total_rarity_dict:
+                total_rarity_dict[rarity] += count
+            else:
+                total_rarity_dict[rarity] = count
+
+            summary[rarity] = {"absolute": count, "relative": count/len(items)*100}
+        
+        container_json[container_name] = {"items": formatted_items, "summary": summary, "count": len(formatted_items)}
+        total_count += len(formatted_items)
+
+    total_summary = {}
+    for rarity,count in total_rarity_dict.items():
+        total_summary[rarity] = {"absolute": count, "relative": count/total_count*100}
+
+    return container_json,total_summary,total_count
 
 URL_INVENTORY = "{profile_url}/inventoryhistory/?ajax=1&cursor%5Btime%5D={time}&cursor%5Btime_frac%5D={frac}&cursor%5Bs%5D={s}&app%5B%5D={appid}"
 PROFILE_URL = "https://steamcommunity.com/my"
@@ -111,12 +137,18 @@ with open(f"{os.path.dirname(os.path.realpath(__file__))}/profile.yaml", "r") as
 
 steamLoginSecure = config['steamLoginSecure']
 
+#parsing arguments for json flag
+parser = argparse.ArgumentParser()
+parser.add_argument("--json", "-j",action='store_true')
+args = parser.parse_args()
+
 _time = 99999999999
 appid="730"
 frac = "0"
 s = "0"
 count = 50
-containers_results = {}
+case_results = {}
+other_results = {}
 last_update = ""
 
 cookies = { "steamLoginSecure": steamLoginSecure }
@@ -154,8 +186,9 @@ while count == 50:
     descriptions = data["descriptions"]
     
 
-    html_containers,new_last_update = parse_html(html)
-    translate_ids(html_containers,descriptions,containers_results)
+    html_case_containers,html_other_containers,new_last_update = parse_html(html)
+    translate_ids(html_case_containers,descriptions,case_results)
+    translate_ids(html_other_containers,descriptions,other_results)
 
     if new_last_update != last_update:
         last_update = new_last_update
@@ -166,53 +199,37 @@ while count == 50:
 #write into  file
 statfile = io.open("stats.txt","w",encoding='utf8')
 
-total_rarity_dict = {}
-total_count = 0
-for container,items in containers_results.items():
-    #writing pulled items from current container into file
-    statfile.write(f"{container}:\n")
-    container_rarity_dict = {}
-    for item in items:
-        if item._rarity in container_rarity_dict:
-            container_rarity_dict[item._rarity] += 1
-        else:
-            container_rarity_dict[item._rarity] = 1
-        statfile.write(f"{str(item)}\n")
+#case opening results
+case_json,case_summary,case_count = calculate_opening_stats(statfile,case_results)
+#other openings result
+other_json,other_summary,other_count = calculate_opening_stats(statfile,other_results)
 
-    statfile.write(f"\n   Summary:\n")
+final_json = {"Case": {"items": case_json,"summary": case_summary, "count": case_count},
+    "Others": {"items": other_json,"summary": other_summary, "count": other_count}}
 
-    #writing summary of opened items regarding rarities for current container into file
-    for rarity,count in container_rarity_dict.items():
-        if rarity in total_rarity_dict:
-            total_rarity_dict[rarity] += count
-        else:
-            total_rarity_dict[rarity] = count
-        statfile.write(f"       {rarity}: {count}/{len(items)}({count/len(items)*100}%)\n")
-    statfile.write("\n")
-
-    total_count += len(items)
-
-#writing overall summary of rarities
-if len(total_rarity_dict) > 0:
-    statfile.write(f"Final Summary:\n\n")
-
-    #calculating rarities for cases
-    case_rarities = ["Mil-Spec Grade","Classified","Covert","Restricted"]
-    case_count = 0
-    for rarity in case_rarities:
-        if rarity in total_rarity_dict:
-            case_count += total_rarity_dict[rarity]
-
-    #printing case rarity summary
-    statfile.write(f"Case Summary:\n")
-    for rarity,count in total_rarity_dict.items():
-        if rarity in case_rarities:
-            statfile.write(f"   {rarity}: {count}/{case_count}({count/case_count*100}%)\n")
-
-    statfile.write(f"\nSticker+Souvenir Summary:\n")
-    other_count = total_count - case_count
-    for rarity,count in total_rarity_dict.items():
-        if rarity not in case_rarities:
-            statfile.write(f"   {rarity}: {count}/{other_count}({count/other_count*100}%)\n")
+if args.json:
+    json.dump(final_json,statfile,indent=4)
 else:
-    print("No opened containers found :(")
+    for name,items in final_json.items():
+        statfile.write(f"{name}:\n")
+        item_items = items["items"]
+        summary = items["summary"]
+        for container_name,container_items in item_items.items():
+            statfile.write(f"    {container_name}:\n")
+            container_summary = container_items["summary"]
+            for item in container_items["items"]:
+                statfile.write(f"        {item}\n")
+            statfile.write(f"        Summary:\n")
+            for rarity_name,value in container_summary.items():
+                statfile.write(f"            {rarity_name}: {value['absolute']}/{container_items['count']}({value['relative']:.2f}%)\n")
+            
+            statfile.write(f"\n")
+
+        statfile.write(f"{name} Summary:\n")
+
+        for rarity_name,value in summary.items():
+                statfile.write(f"    {value['absolute']}/{items['count']}({value['relative']:.2f}%)\n")
+
+        statfile.write(f"\n")
+
+        
