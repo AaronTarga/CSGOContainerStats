@@ -85,7 +85,7 @@ def retrieve_page(url,cookies):
             data = resp.json()
         except:
             tries += 1
-            print(f"error fetching page retrying {10-tries} more time")
+            print(f"error fetching page, retrying {10-tries} more times")
             time.sleep(5)
 
     return data
