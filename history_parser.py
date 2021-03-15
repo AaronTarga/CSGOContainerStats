@@ -228,7 +228,7 @@ else:
         statfile.write(f"{name} Summary:\n")
 
         for rarity_name,value in summary.items():
-                statfile.write(f"    {value['absolute']}/{items['count']}({value['relative']:.2f}%)\n")
+                statfile.write(f"    {rarity_name}: {value['absolute']}/{items['count']}({value['relative']:.2f}%)\n")
 
         statfile.write(f"\n")
 

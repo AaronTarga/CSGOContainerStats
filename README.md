@@ -35,7 +35,7 @@ Case:
             Mil-Spec Grade: 1/1(100.00%)
 
 Case Summary:
-    1/1(100.00%)
+    Mil-Spec Grade: 1/1(100.00%)
 
 Others:
     CS20 Sticker Capsule:
@@ -71,9 +71,9 @@ Others:
             High Grade: 1/2(50.00%)
 
 Others Summary:
-    5/9(55.56%)
-    3/9(33.33%)
-    1/9(11.11%)
+    High Grade: 5/9(55.56%)
+    Remarkable: 3/9(33.33%)
+    Exotic: 1/9(11.11%)
 ```
 
 Here is an example for an output file of the script for the json format:
