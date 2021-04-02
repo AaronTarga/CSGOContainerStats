@@ -59,15 +59,26 @@ def translate_ids(html_ids,descriptions,containers_results):
             item_id = f"{item[1]}_{item[2]}"
             item_info = descriptions["730"][item_id]
             item_name = item_info["market_hash_name"]
-            item_rarity = ""
-            item_type = ""
+            item_rarity = None
+            item_type = None
+            rare_special = False
 
             #parsing tags for item_type and rarity
             for tag in item_info["tags"]:
                 if tag['category'] == "Type":
                     item_type = tag['name']
+                #check for knives
+                if tag['category'] == "Quality" and tag['internal_name'] == "unusual":
+                    rare_special = True
                 if tag['category'] == "Rarity":
+                    #check for gloves
+                    if tag['internal_name'] == "Rarity_Ancient":
+                        rare_special = True
                     item_rarity = tag['name']
+
+            if rare_special:
+                item_rarity = "Rare Special"
+
                 
             containers_results[container_name].append((date,item_name,item_rarity))
 
