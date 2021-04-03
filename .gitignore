@@ -2,3 +2,4 @@ profile.yaml
 stats.txt
 stats
 .vscode
+**__pycache__

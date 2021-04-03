@@ -20,7 +20,7 @@ pip install -r requirements.txt
 2. Retrieve steam cookie
 3. Enter cookie in example_profile.yaml file(see [example file](example_profile.yaml))
 4. Rename example_profile.yaml to profile.yaml
-4. Execute python script and wait for it to finish 
+4. Execute calculate python script and wait for it to finish (python calculate.py)
 5. Stats are now written in stats.txt file from the directory where you executed the script
 
 You can add --json or -j to the script to get a json output.
@@ -38,6 +38,21 @@ Case Summary:
     Mil-Spec Grade: 1/1(100.00%)
 
 Others:
+    2020 RMR Legends:
+        24 Mar, 2021 - Sticker | Vitality | 2020 RMR - High Grade
+        Summary:
+            High Grade: 1/1(100.00%)
+
+    2020 RMR Contenders:
+        24 Mar, 2021 - Sticker | ESPADA | 2020 RMR - High Grade
+        Summary:
+            High Grade: 1/1(100.00%)
+
+    Poorly Drawn Capsule:
+        24 Mar, 2021 - Sticker | Poorly Drawn FBI (Holo) - Remarkable
+        Summary:
+            Remarkable: 1/1(100.00%)
+
     CS20 Sticker Capsule:
         4 Jun, 2020 - Sticker | Nuke Beast - High Grade
         4 Jun, 2020 - Sticker | Nuke Beast - High Grade
@@ -71,9 +86,9 @@ Others:
             High Grade: 1/2(50.00%)
 
 Others Summary:
-    High Grade: 5/9(55.56%)
-    Remarkable: 3/9(33.33%)
-    Exotic: 1/9(11.11%)
+    High Grade: 7/12(58.33%)
+    Remarkable: 4/12(33.33%)
+    Exotic: 1/12(8.33%)
 ```
 
 Here is an example for an output file of the script for the json format:
@@ -105,6 +120,42 @@ Here is an example for an output file of the script for the json format:
     },
     "Others": {
         "items": {
+            "2020 RMR Legends": {
+                "items": [
+                    "24 Mar, 2021 - Sticker | Vitality | 2020 RMR - High Grade"
+                ],
+                "summary": {
+                    "High Grade": {
+                        "absolute": 1,
+                        "relative": 100.0
+                    }
+                },
+                "count": 1
+            },
+            "2020 RMR Contenders": {
+                "items": [
+                    "24 Mar, 2021 - Sticker | ESPADA | 2020 RMR - High Grade"
+                ],
+                "summary": {
+                    "High Grade": {
+                        "absolute": 1,
+                        "relative": 100.0
+                    }
+                },
+                "count": 1
+            },
+            "Poorly Drawn Capsule": {
+                "items": [
+                    "24 Mar, 2021 - Sticker | Poorly Drawn FBI (Holo) - Remarkable"
+                ],
+                "summary": {
+                    "Remarkable": {
+                        "absolute": 1,
+                        "relative": 100.0
+                    }
+                },
+                "count": 1
+            },
             "CS20 Sticker Capsule": {
                 "items": [
                     "4 Jun, 2020 - Sticker | Nuke Beast - High Grade",
@@ -184,19 +235,19 @@ Here is an example for an output file of the script for the json format:
         },
         "summary": {
             "High Grade": {
-                "absolute": 5,
-                "relative": 55.55555555555556
+                "absolute": 7,
+                "relative": 58.333333333333336
             },
             "Remarkable": {
-                "absolute": 3,
+                "absolute": 4,
                 "relative": 33.33333333333333
             },
             "Exotic": {
                 "absolute": 1,
-                "relative": 11.11111111111111
+                "relative": 8.333333333333332
             }
         },
-        "count": 9
+        "count": 12
     }
 }
 ```
