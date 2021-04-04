@@ -23,7 +23,19 @@ pip install -r requirements.txt
 4. Execute calculate python script and wait for it to finish (python calculate.py)
 5. Stats are now written in stats.txt file from the directory where you executed the script
 
+### Arguments
+
+There are different arguments that can be viewed calling help.
+> python calculate.py help
+
+With the modes flag you can set that the script backups the progress of parsing:
+> python calculate.py -m backup
+
+If your script crashes you can continue from where it was using continue mode:
+> python calculate.py -m continue
+
 You can add --json or -j to the script to get a json output.
+> python calculate.py --json
 
 ## Example Result
 Here is an example for an output file of the script for the normal format:
