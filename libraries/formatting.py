@@ -1,3 +1,4 @@
+# maps rarity to number for sorting
 def map_rarity(rarity):
     if rarity == "Rare Special":
         return 5
@@ -9,6 +10,7 @@ def map_rarity(rarity):
         return 2
     else:
         return 1
+
 
 # goes through the dict of the unboxed items, calculates the absoulte and relative occurences and puts them in hierarchary structured dict
 def calculate_opening_stats(container_results):
@@ -59,6 +61,7 @@ def calculate_opening_stats(container_results):
                                  "relative": count/total_count*100}
 
     return container_json, total_summary, total_count
+
 
 # loops through json and writes formatted into a file
 def formatted_write(final_json, statfile):

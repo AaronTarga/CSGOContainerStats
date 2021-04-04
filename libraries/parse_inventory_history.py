@@ -1,7 +1,23 @@
 import re
 import requests
 import time
+import io
+import os
+import ast
+import sys
 
+
+def parse_tuple(string):
+    try:
+        s = ast.literal_eval(str(string))
+        if type(s) == tuple:
+            return s
+        return
+    except:
+        return
+
+
+# parses html of steam inventory history page for unboxed items
 def parse_html(html):
     # regex patterns
     date = 'tradehistory_date\">(.+?)<.+?tradehistory_event_description\">(.+?)<'
@@ -40,6 +56,7 @@ def parse_html(html):
     return (opened_cases, opened_other, last_update)
 
 
+# maps unboxed item ids to names and rarities
 def translate_ids(html_ids, descriptions, containers_results):
     # adding unboxed items to results array
     for container, items in html_ids.items():
@@ -83,6 +100,7 @@ def translate_ids(html_ids, descriptions, containers_results):
     return containers_results
 
 
+# retrieves current page of inventory history
 def retrieve_page(url, cookies):
     data = None
 
@@ -101,12 +119,46 @@ def retrieve_page(url, cookies):
     return data
 
 
-def extract_unboxings(url_inv,cookies):
-    _time = 99999999999
-    count = 50
+# retrieves saved data from backup file
+def parse_backups(url_inv):
     case_results = {}
     other_results = {}
+    timestamp = 0
+    profile_url = re.findall("id\/([^\/]*)", url_inv)[0]
+
+    try:
+        with io.open(f"downloads/{profile_url}.txt", "r", encoding='utf8') as backup:
+            timestamp = int(next(backup).split()[1])
+            count = 0
+            container = ""
+
+            for line in backup:
+                if line[0] == "{":
+                    count += 1
+                if count == 1:
+                    if line[0] == "[":
+                        container = line[1:-2]
+                        case_results[container] = []
+                    elif line[0] == "(":
+                        case_results[container].append(parse_tuple(line))
+                elif count == 2:
+                    if line[0] == "[":
+                        container = line[1:-2]
+                        other_results[container] = []
+                    elif line[0] == "(":
+                        other_results[container].append(parse_tuple(line))
+
+    except FileNotFoundError:
+        sys.exit("No backup files found!")
+
+    return (case_results, other_results, timestamp)
+
+
+# parses inventory history and returns all unboxed items from cases and others(stickers, souvenir items, ...) structured by containers
+def extract_unboxings(url_inv, cookies, case_results, other_results, save=False, _time=99999999999):
+    count = 50
     last_update = ""
+    profile_url = re.findall("id\/([^\/]*)", url_inv)[0]
 
     while count == 50:
 
@@ -139,6 +191,27 @@ def extract_unboxings(url_inv,cookies):
             last_update = new_last_update
             print(last_update)
 
+        # writing fetched data after each request into a file if backup enabled
+        if save:
+            if not os.path.exists('downloads'):
+                os.makedirs('downloads')
+            with io.open(f"downloads/{profile_url}.txt", "w", encoding='utf8') as backup:
+                backup.writelines("timestamp " + str(_time) + "\n")
+
+                backup.writelines("\n{Cases}\n")
+
+                for container, items in case_results.items():
+                    backup.writelines("[" + container + "]\n")
+                    for item in items:
+                        backup.writelines(str(item) + "\n")
+
+                backup.writelines("\n{Others}\n")
+
+                for container, items in other_results.items():
+                    backup.writelines("[" + container + "]\n")
+                    for item in items:
+                        backup.writelines(str(item) + "\n")
+
         time.sleep(5)
 
-    return (case_results,other_results)
+    return (case_results, other_results)
